@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Veo Video Generation</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 1rem;
+        }
+        button:hover {
+            background-color: #357ae8;
+        }
+        #status {
+            margin-top: 1rem;
+            font-style: italic;
+            color: #555;
+        }
+        #download-link {
+            display: none;
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Video Generation with Google Veo</h1>
+        <p>Click the button to generate a video based on the prompt.</p>
+        <button id="generate-btn">Generate Video</button>
+        <div id="status"></div>
+        <a href="#" id="download-link" download="realism_example.mp4">Download Video</a>
+    </div>
+
+    <script type="module">
+        // This is a placeholder for the actual GoogleGenAI library.
+        // In a real application, you would import it from a package.
+        const GoogleGenAI = () => ({
+            models: {
+                generateVideos: async ({ model, prompt }) => {
+                    console.log(`Generating video with model: ${model}`);
+                    console.log(`Prompt: ${prompt}`);
+                    // Simulate a long-running operation
+                    return {
+                        done: false,
+                        name: 'operations/12345',
+                        response: null
+                    };
+                }
+            },
+            operations: {
+                getVideosOperation: async ({ operation }) => {
+                    console.log("Polling operation status...");
+                    // Simulate the operation completing after a few polls
+                    if (Math.random() > 0.5) {
+                        return {
+                            done: true,
+                            name: 'operations/12345',
+                            response: {
+                                generatedVideos: [{
+                                    video: 'simulated_video_file'
+                                }]
+                            }
+                        };
+                    }
+                    return {
+                        done: false,
+                        name: 'operations/12345',
+                        response: null
+                    };
+                }
+            },
+            files: {
+                download: ({ file, downloadPath }) => {
+                    console.log(`Downloading ${file} to ${downloadPath}`);
+                    // In a real browser environment, you'd create a blob and a download link.
+                    const statusDiv = document.getElementById('status');
+                    statusDiv.textContent = `Generated video saved to ${downloadPath}`;
+                    const downloadLink = document.getElementById('download-link');
+                    
+                    // Create a dummy file for download
+                    const blob = new Blob(["This is a dummy video file."], { type: "video/mp4" });
+                    const url = URL.createObjectURL(blob);
+
+                    downloadLink.href = url;
+                    downloadLink.style.display = 'block';
+                }
+            }
+        });
+
+        document.getElementById('generate-btn').addEventListener('click', async () => {
+            const statusDiv = document.getElementById('status');
+            const downloadLink = document.getElementById('download-link');
+            downloadLink.style.display = 'none';
+            statusDiv.textContent = 'Initializing video generation...';
+
+            const ai = new GoogleGenAI({});
+
+            const prompt = `Drone shot following a classic red convertible driven by a man along a winding coastal road at sunset, waves crashing against the rocks below.
+The convertible accelerates fast and the engine roars loudly.`;
+
+            try {
+                let operation = await ai.models.generateVideos({
+                    model: "veo-3.0-generate-preview",
+                    prompt: prompt,
+                });
+
+                // Poll the operation status until the video is ready.
+                while (!operation.done) {
+                    statusDiv.textContent = "Waiting for video generation to complete...";
+                    await new Promise((resolve) => setTimeout(resolve, 3000)); // shorter delay for demo
+                    operation = await ai.operations.getVideosOperation({
+                        operation: operation,
+                    });
+                }
+
+                statusDiv.textContent = "Video generation complete. Preparing download...";
+
+                // Download the generated video.
+                ai.files.download({
+                    file: operation.response.generatedVideos[0].video,
+                    downloadPath: "realism_example.mp4",
+                });
+                console.log(`Generated video saved to realism_example.mp4`);
+
+            } catch (error) {
+                console.error("An error occurred:", error);
+                statusDiv.textContent = "An error occurred during video generation.";
+            }
+        });
+    </script>
+</body>
+</html>
