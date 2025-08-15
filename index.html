@@ -20,6 +20,7 @@
             padding: 2rem;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
         button {
             background-color: #4285F4;
@@ -44,23 +45,123 @@
             margin-top: 1rem;
             font-weight: bold;
         }
+        #settings-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #6c757d;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <button id="settings-btn">Settings</button>
         <h1>Video Generation with Google Veo</h1>
         <p>Click the button to generate a video based on the prompt.</p>
+        <div class="form-group">
+            <label for="model-select">Select Model:</label>
+            <select id="model-select">
+                <option value="veo-3.0-generate-preview">veo-3.0-generate-preview</option>
+                <option value="veo-2.0-generate-preview">veo-2.0-generate-preview</option>
+                <option value="imagen-3.0-generate-preview">imagen-3.0-generate-preview</option>
+            </select>
+        </div>
         <button id="generate-btn">Generate Video</button>
         <div id="status"></div>
         <a href="#" id="download-link" download="realism_example.mp4">Download Video</a>
     </div>
 
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Settings</h2>
+            <div class="form-group">
+                <label for="api-key">Google AI API Key:</label>
+                <input type="password" id="api-key" placeholder="Enter your API key">
+            </div>
+            <button id="save-settings-btn">Save</button>
+        </div>
+    </div>
+
     <script type="module">
+        const settingsBtn = document.getElementById('settings-btn');
+        const settingsModal = document.getElementById('settings-modal');
+        const closeBtn = document.querySelector('.close');
+        const saveSettingsBtn = document.getElementById('save-settings-btn');
+        const apiKeyInput = document.getElementById('api-key');
+        const modelSelect = document.getElementById('model-select');
+
+        // Load API key from localStorage
+        apiKeyInput.value = localStorage.getItem('googleAiApiKey') || '';
+
+        settingsBtn.onclick = () => {
+            settingsModal.style.display = 'block';
+        };
+        closeBtn.onclick = () => {
+            settingsModal.style.display = 'none';
+        };
+        window.onclick = (event) => {
+            if (event.target == settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+        };
+        saveSettingsBtn.onclick = () => {
+            localStorage.setItem('googleAiApiKey', apiKeyInput.value);
+            settingsModal.style.display = 'none';
+            alert('API Key saved!');
+        };
+
+
         // This is a placeholder for the actual GoogleGenAI library.
-        // In a real application, you would import it from a package.
-        const GoogleGenAI = () => ({
+        const GoogleGenAI = (apiKey) => ({
             models: {
                 generateVideos: async ({ model, prompt }) => {
+                    console.log(`Using API Key: ${apiKey ? 'Exists' : 'Not Found'}`);
                     console.log(`Generating video with model: ${model}`);
                     console.log(`Prompt: ${prompt}`);
                     // Simulate a long-running operation
@@ -96,12 +197,10 @@
             files: {
                 download: ({ file, downloadPath }) => {
                     console.log(`Downloading ${file} to ${downloadPath}`);
-                    // In a real browser environment, you'd create a blob and a download link.
                     const statusDiv = document.getElementById('status');
                     statusDiv.textContent = `Generated video saved to ${downloadPath}`;
                     const downloadLink = document.getElementById('download-link');
                     
-                    // Create a dummy file for download
                     const blob = new Blob(["This is a dummy video file."], { type: "video/mp4" });
                     const url = URL.createObjectURL(blob);
 
@@ -112,19 +211,25 @@
         });
 
         document.getElementById('generate-btn').addEventListener('click', async () => {
+            const apiKey = localStorage.getItem('googleAiApiKey');
+            if (!apiKey) {
+                alert('Please save your API key in the settings first.');
+                return;
+            }
+
             const statusDiv = document.getElementById('status');
             const downloadLink = document.getElementById('download-link');
             downloadLink.style.display = 'none';
             statusDiv.textContent = 'Initializing video generation...';
 
-            const ai = new GoogleGenAI({});
+            const ai = new GoogleGenAI(apiKey);
 
             const prompt = `Drone shot following a classic red convertible driven by a man along a winding coastal road at sunset, waves crashing against the rocks below.
 The convertible accelerates fast and the engine roars loudly.`;
 
             try {
                 let operation = await ai.models.generateVideos({
-                    model: "veo-3.0-generate-preview",
+                    model: modelSelect.value,
                     prompt: prompt,
                 });
 
