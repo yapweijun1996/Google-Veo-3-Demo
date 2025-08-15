@@ -3,259 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Veo Video Generation</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f2f5;
-        }
-        .container {
-            text-align: center;
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-        button {
-            background-color: #4285F4;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 1rem;
-        }
-        button:hover {
-            background-color: #357ae8;
-        }
-        #status {
-            margin-top: 1rem;
-            font-style: italic;
-            color: #555;
-        }
-        #download-link {
-            display: none;
-            margin-top: 1rem;
-            font-weight: bold;
-        }
-        #settings-btn {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: #6c757d;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 500px;
-            border-radius: 8px;
-        }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .form-group {
-            margin-bottom: 1rem;
-            text-align: left;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-        }
-    </style>
+    <title>Chatbox AI Video Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="container">
-        <button id="settings-btn">Settings</button>
-        <h1>Video Generation with Google Veo</h1>
-        <p>Click the button to generate a video based on the prompt.</p>
-        <div class="form-group">
-            <label for="model-select">Select Model:</label>
-            <select id="model-select">
-                <option value="veo-3.0-generate-preview">veo-3.0-generate-preview</option>
-                <option value="veo-2.0-generate-preview">veo-2.0-generate-preview</option>
-                <option value="imagen-3.0-generate-preview">imagen-3.0-generate-preview</option>
-            </select>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+
+    <div class="w-full max-w-2xl h-full md:h-auto md:max-h-[700px] flex flex-col bg-white shadow-lg rounded-lg">
+        <!-- Header -->
+        <div class="bg-blue-600 text-white p-4 flex justify-between items-center rounded-t-lg">
+            <h1 class="text-xl font-bold">AI Video Generator</h1>
+            <div class="relative">
+                <button id="settings-btn" class="p-2 rounded-full hover:bg-blue-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </button>
+            </div>
         </div>
-        <button id="generate-btn">Generate Video</button>
-        <div id="status"></div>
-        <a href="#" id="download-link" download="realism_example.mp4">Download Video</a>
+
+        <!-- Chat Messages -->
+        <div id="chat-box" class="flex-1 p-4 overflow-y-auto">
+            <div class="flex justify-start mb-4">
+                <div class="bg-gray-200 text-gray-800 p-3 rounded-lg max-w-xs">
+                    <p>Hello! Describe the video you want me to create. Please set your API key in the settings first.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Message Input -->
+        <div class="p-4 border-t border-gray-200">
+            <div class="flex items-center">
+                <input type="text" id="prompt-input" class="flex-1 p-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., A cat playing a piano...">
+                <button id="send-btn" class="bg-blue-600 text-white p-2 rounded-r-lg hover:bg-blue-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                </button>
+            </div>
+        </div>
     </div>
 
-    <div id="settings-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Settings</h2>
-            <div class="form-group">
-                <label for="api-key">Google AI API Key:</label>
-                <input type="password" id="api-key" placeholder="Enter your API key">
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">Settings</h2>
+                <button class="close-btn text-gray-500 hover:text-gray-800">&times;</button>
             </div>
-            <button id="save-settings-btn">Save</button>
+            <div class="mb-4">
+                <label for="api-key" class="block text-gray-700 mb-2">Google AI API Key:</label>
+                <input type="password" id="api-key" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="Enter your API key">
+            </div>
+            <div class="mb-4">
+                <label for="model-select" class="block text-gray-700 mb-2">Select Model:</label>
+                <select id="model-select" class="w-full p-2 border border-gray-300 rounded-lg">
+                    <option value="veo-3.0-generate-preview">veo-3.0-generate-preview</option>
+                    <option value="veo-2.0-generate-preview">veo-2.0-generate-preview</option>
+                    <option value="imagen-3.0-generate-preview">imagen-3.0-generate-preview</option>
+                </select>
+            </div>
+            <button id="save-settings-btn" class="w-full bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700">Save</button>
         </div>
     </div>
 
     <script type="module">
         const settingsBtn = document.getElementById('settings-btn');
         const settingsModal = document.getElementById('settings-modal');
-        const closeBtn = document.querySelector('.close');
+        const closeBtn = document.querySelector('.close-btn');
         const saveSettingsBtn = document.getElementById('save-settings-btn');
         const apiKeyInput = document.getElementById('api-key');
         const modelSelect = document.getElementById('model-select');
+        const chatBox = document.getElementById('chat-box');
+        const promptInput = document.getElementById('prompt-input');
+        const sendBtn = document.getElementById('send-btn');
 
-        // Load API key from localStorage
+        // Load settings from localStorage
         apiKeyInput.value = localStorage.getItem('googleAiApiKey') || '';
+        modelSelect.value = localStorage.getItem('googleAiModel') || 'veo-3.0-generate-preview';
 
-        settingsBtn.onclick = () => {
-            settingsModal.style.display = 'block';
-        };
-        closeBtn.onclick = () => {
-            settingsModal.style.display = 'none';
-        };
+        // --- Modal Logic ---
+        settingsBtn.onclick = () => settingsModal.classList.remove('hidden');
+        closeBtn.onclick = () => settingsModal.classList.add('hidden');
         window.onclick = (event) => {
             if (event.target == settingsModal) {
-                settingsModal.style.display = 'none';
+                settingsModal.classList.add('hidden');
             }
         };
         saveSettingsBtn.onclick = () => {
             localStorage.setItem('googleAiApiKey', apiKeyInput.value);
-            settingsModal.style.display = 'none';
-            alert('API Key saved!');
+            localStorage.setItem('googleAiModel', modelSelect.value);
+            settingsModal.classList.add('hidden');
+            alert('Settings saved!');
         };
 
+        // --- Chat Logic ---
+        const addMessage = (message, sender = 'ai') => {
+            const messageWrapper = document.createElement('div');
+            const messageBubble = document.createElement('div');
+            
+            messageWrapper.className = `flex mb-4 ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+            messageBubble.className = `p-3 rounded-lg max-w-xs ${sender === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'}`;
+            messageBubble.innerHTML = `<p>${message}</p>`; // Use innerHTML to render links
+            
+            messageWrapper.appendChild(messageBubble);
+            chatBox.appendChild(messageWrapper);
+            chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll
+        };
 
-        // This is a placeholder for the actual GoogleGenAI library.
-        const GoogleGenAI = (apiKey) => ({
-            models: {
-                generateVideos: async ({ model, prompt }) => {
-                    console.log(`Using API Key: ${apiKey ? 'Exists' : 'Not Found'}`);
-                    console.log(`Generating video with model: ${model}`);
-                    console.log(`Prompt: ${prompt}`);
-                    // Simulate a long-running operation
-                    return {
-                        done: false,
-                        name: 'operations/12345',
-                        response: null
-                    };
-                }
-            },
-            operations: {
-                getVideosOperation: async ({ operation }) => {
-                    console.log("Polling operation status...");
-                    // Simulate the operation completing after a few polls
-                    if (Math.random() > 0.5) {
-                        return {
-                            done: true,
-                            name: 'operations/12345',
-                            response: {
-                                generatedVideos: [{
-                                    video: 'simulated_video_file'
-                                }]
-                            }
-                        };
-                    }
-                    return {
-                        done: false,
-                        name: 'operations/12345',
-                        response: null
-                    };
-                }
-            },
-            files: {
-                download: ({ file, downloadPath }) => {
-                    console.log(`Downloading ${file} to ${downloadPath}`);
-                    const statusDiv = document.getElementById('status');
-                    statusDiv.textContent = `Generated video saved to ${downloadPath}`;
-                    const downloadLink = document.getElementById('download-link');
-                    
-                    const blob = new Blob(["This is a dummy video file."], { type: "video/mp4" });
-                    const url = URL.createObjectURL(blob);
-
-                    downloadLink.href = url;
-                    downloadLink.style.display = 'block';
-                }
-            }
+        sendBtn.addEventListener('click', handleSend);
+        promptInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSend();
         });
 
-        document.getElementById('generate-btn').addEventListener('click', async () => {
+        async function handleSend() {
+            const prompt = promptInput.value.trim();
+            if (!prompt) return;
+
+            addMessage(prompt, 'user');
+            promptInput.value = '';
+
             const apiKey = localStorage.getItem('googleAiApiKey');
             if (!apiKey) {
-                alert('Please save your API key in the settings first.');
+                addMessage("Please save your API key in the settings first.");
                 return;
             }
 
-            const statusDiv = document.getElementById('status');
-            const downloadLink = document.getElementById('download-link');
-            downloadLink.style.display = 'none';
-            statusDiv.textContent = 'Initializing video generation...';
-
-            const ai = new GoogleGenAI(apiKey);
-
-            const prompt = `Drone shot following a classic red convertible driven by a man along a winding coastal road at sunset, waves crashing against the rocks below.
-The convertible accelerates fast and the engine roars loudly.`;
+            addMessage("Generating your video... this may take a moment.");
 
             try {
+                const ai = new GoogleGenAI(apiKey);
                 let operation = await ai.models.generateVideos({
                     model: modelSelect.value,
                     prompt: prompt,
                 });
 
-                // Poll the operation status until the video is ready.
                 while (!operation.done) {
-                    statusDiv.textContent = "Waiting for video generation to complete...";
-                    await new Promise((resolve) => setTimeout(resolve, 3000)); // shorter delay for demo
-                    operation = await ai.operations.getVideosOperation({
-                        operation: operation,
-                    });
+                    await new Promise((resolve) => setTimeout(resolve, 5000)); // Poll every 5s
+                    operation = await ai.operations.getVideosOperation({ operation });
                 }
 
-                statusDiv.textContent = "Video generation complete. Preparing download...";
-
-                // Download the generated video.
-                ai.files.download({
+                const downloadUrl = await ai.files.download({
                     file: operation.response.generatedVideos[0].video,
-                    downloadPath: "realism_example.mp4",
+                    downloadPath: "generated_video.mp4",
                 });
-                console.log(`Generated video saved to realism_example.mp4`);
+
+                addMessage(`Video generation complete! <a href="${downloadUrl}" download="generated_video.mp4" class="text-blue-500 underline">Download your video here.</a>`);
 
             } catch (error) {
                 console.error("An error occurred:", error);
-                statusDiv.textContent = "An error occurred during video generation.";
+                addMessage("Sorry, an error occurred during video generation.");
             }
-        });
+        }
+
+        // --- Mock GoogleGenAI Class ---
+        class GoogleGenAI {
+            constructor(apiKey) {
+                this.apiKey = apiKey;
+            }
+            models = {
+                generateVideos: async ({ model, prompt }) => {
+                    console.log(`API Key: ${this.apiKey ? 'Set' : 'Not Set'}`);
+                    console.log(`Model: ${model}, Prompt: ${prompt}`);
+                    // Simulate API call delay
+                    await new Promise(res => setTimeout(res, 1000));
+                    return { done: false, name: 'operations/mock-12345' };
+                }
+            };
+            operations = {
+                getVideosOperation: async ({ operation }) => {
+                    console.log("Polling operation...");
+                    // Simulate completion after a few polls
+                    if (Math.random() > 0.3) {
+                        return { ...operation, done: false };
+                    }
+                    return {
+                        ...operation,
+                        done: true,
+                        response: { generatedVideos: [{ video: 'simulated_video_file_resource' }] }
+                    };
+                }
+            };
+            files = {
+                download: async ({ file, downloadPath }) => {
+                    console.log(`Downloading ${file} to ${downloadPath}`);
+                    const blob = new Blob(["This is a dummy MP4 file."], { type: "video/mp4" });
+                    return URL.createObjectURL(blob);
+                }
+            };
+        }
     </script>
 </body>
 </html>
