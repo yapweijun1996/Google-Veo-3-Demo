@@ -1697,7 +1697,7 @@ async function imageGenerationKt(e, n, t, o) {
   throw new Error("All API keys failed for image generation. Please check your keys in the settings.");
 }
 
-async function videoGenerationKt(e, n, t, o, negativePrompt, aspectRatio) {
+async function videoGenerationKt(e, n, t, o, negativePrompt, aspectRatio, videoModel) {
   let i = 0;
   const r = n.length;
   for (; i < r;) {
@@ -1705,7 +1705,6 @@ async function videoGenerationKt(e, n, t, o, negativePrompt, aspectRatio) {
     console.log(`Attempting to use API key #${t + 1}`);
     try {
       const ai = new ce(a);
-      const f = "veo-3.0";
       
       const generationConfig = {};
       if (negativePrompt) {
@@ -1715,7 +1714,7 @@ async function videoGenerationKt(e, n, t, o, negativePrompt, aspectRatio) {
         generationConfig.aspectRatio = aspectRatio;
       }
 
-      let operation = await ai.getGenerativeModel({ model: f }).generateContent({
+      let operation = await ai.getGenerativeModel({ model: videoModel }).generateContent({
         prompt: e,
         generationConfig: generationConfig,
       });
@@ -1794,6 +1793,7 @@ generateImageButton,
 generateVideoButton,
 negativePromptInput,
 aspectRatioSelect,
+videoModelSelect,
 imageLightbox,
 lightboxImage,
 closeLightboxButton,
@@ -1824,7 +1824,8 @@ async function generateVideo() {
     try {
         const negativePrompt = await T("negativePrompt", "");
         const aspectRatio = await T("aspectRatio", "16:9");
-        const modelResponse = await videoGenerationKt(t.text, X, Ye, E, negativePrompt, aspectRatio);
+        const videoModel = await T("videoModel", "veo-3.0");
+        const modelResponse = await videoGenerationKt(t.text, X, Ye, E, negativePrompt, aspectRatio, videoModel);
         A(!1, _, u, b, E);
     } catch (o) {
         J(N, o.message);
@@ -1975,6 +1976,7 @@ async function tn() {
     generateVideoButton = document.getElementById("generate-video-button"),
     negativePromptInput = document.getElementById("negative-prompt-input"),
     aspectRatioSelect = document.getElementById("aspect-ratio-select"),
+    videoModelSelect = document.getElementById("video-model-select"),
     imageLightbox = document.getElementById("image-lightbox"),
     lightboxImage = document.getElementById("lightbox-image"),
     closeLightboxButton = document.getElementById("close-lightbox-button"),
@@ -2080,7 +2082,7 @@ async function tn() {
         case"settings-button": {
           const t=await T("apiKeys", []);
           K.value=t.map(qe).join(`
-`), te.value=await T("modelName", "gemini-2.5-flash"), negativePromptInput.value = await T("negativePrompt", ""), aspectRatioSelect.value = await T("aspectRatio", "16:9"), x.classList.remove("hidden");
+`), te.value=await T("modelName", "gemini-2.5-flash"), negativePromptInput.value = await T("negativePrompt", ""), aspectRatioSelect.value = await T("aspectRatio", "16:9"), videoModelSelect.value = await T("videoModel", "veo-3.0"), x.classList.remove("hidden");
           break
         }
         case"cancel-settings-button":x.classList.add("hidden");
@@ -2090,7 +2092,7 @@ async function tn() {
 `).map(o=>o.trim()).filter(o=>o);
           if(t.length>0) {
             const o=t.map(Qt);
-            await F("apiKeys", o), await F("modelName", te.value), await F("negativePrompt", negativePromptInput.value), await F("aspectRatio", aspectRatioSelect.value), await F("currentKeyIndex", 0), x.classList.add("hidden"), location.reload()
+            await F("apiKeys", o), await F("modelName", te.value), await F("negativePrompt", negativePromptInput.value), await F("aspectRatio", aspectRatioSelect.value), await F("videoModel", videoModelSelect.value), await F("currentKeyIndex", 0), x.classList.add("hidden"), location.reload()
           }
           else alert("API Key(s) cannot be empty.");
           break
