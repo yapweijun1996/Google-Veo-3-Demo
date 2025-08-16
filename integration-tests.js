@@ -407,6 +407,10 @@ class IntegrationTester {
   testAPIKeyValidation() {
     const securityManager = this.app.securityManager;
     
+    if (!securityManager || !securityManager.validateApiKey) {
+      return { passed: false, error: 'SecurityManager or validateApiKey method not available' };
+    }
+    
     // Test valid API key format
     const validKey = 'AIzaSyDummyKeyForTesting1234567890123456789';
     const validResult = securityManager.validateApiKey(validKey);
@@ -533,9 +537,18 @@ class IntegrationTester {
   testRecoveryMechanisms() {
     const errorHandler = this.app.errorHandler;
     
-    // Test error recovery
-    const recoverableError = { recoverable: true, category: 'network' };
-    const canRecover = errorHandler.isRecoverable(recoverableError);
+    if (!errorHandler || !errorHandler.isRecoverable) {
+      return { passed: false, error: 'ErrorHandler or isRecoverable method not available' };
+    }
+    
+    // Test error recovery with proper error info structure
+    const recoverableErrorInfo = { 
+      recoverable: true, 
+      category: 'network',
+      message: 'Network error occurred',
+      severity: 'medium'
+    };
+    const canRecover = errorHandler.isRecoverable(recoverableErrorInfo);
     
     return canRecover === true;
   }

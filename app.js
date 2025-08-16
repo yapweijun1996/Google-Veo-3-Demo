@@ -217,7 +217,7 @@ class VideoGeneratorApp {
     this.currentSettings = settings;
     
     // Update API service with new settings
-    if (settings.apiKey) {
+    if (settings.apiKey && this.securityManager.validateApiKey(settings.apiKey).isValid) {
       try {
         this.apiService.updateApiKey(settings.apiKey);
         this.uiManager.showNotification('Settings updated successfully', 'success');
@@ -226,6 +226,9 @@ class VideoGeneratorApp {
           context: 'settings_update'
         });
       }
+    } else if (settings.apiKey) {
+      // Invalid API key
+      this.uiManager.showNotification('Invalid API key format', 'error');
     }
   }
   

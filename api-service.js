@@ -29,13 +29,25 @@ class APIService {
    */
   initialize(apiKey) {
     try {
+      if (!apiKey || typeof apiKey !== 'string' || apiKey.trim().length === 0) {
+        throw new Error('API key is required and must be a non-empty string');
+      }
+      
       this.apiKey = apiKey;
       this.genAI = new GoogleGenAI(apiKey);
       console.log('Google GenAI client initialized successfully');
       return true;
     } catch (error) {
       console.error('Failed to initialize Google GenAI client:', error);
-      throw new Error('Failed to initialize API client. Please check your API key.');
+      
+      // Provide more specific error messages
+      if (error.message.includes('API Key must be set')) {
+        throw new Error('Invalid API key. Please check your Google AI API key.');
+      } else if (error.message.includes('API key is required')) {
+        throw new Error('API key is required. Please configure your API key in settings.');
+      } else {
+        throw new Error('Failed to initialize API client. Please check your API key.');
+      }
     }
   }
   

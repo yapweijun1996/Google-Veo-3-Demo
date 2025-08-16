@@ -129,6 +129,12 @@ class SettingsManager {
   hideModal() {
     if (!this.modal) return;
     
+    // Remove focus from any focused elements inside modal before hiding
+    const focusedElement = this.modal.querySelector(':focus');
+    if (focusedElement) {
+      focusedElement.blur();
+    }
+    
     this.modal.classList.remove('open');
     this.modal.setAttribute('aria-hidden', 'true');
     
