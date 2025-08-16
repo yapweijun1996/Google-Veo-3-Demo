@@ -411,15 +411,24 @@ class IntegrationTester {
       return { passed: false, error: 'SecurityManager or validateApiKey method not available' };
     }
     
-    // Test valid API key format
-    const validKey = 'AIzaSyDummyKeyForTesting1234567890123456789';
-    const validResult = securityManager.validateApiKey(validKey);
-    
-    // Test invalid API key
-    const invalidKey = 'invalid-key';
-    const invalidResult = securityManager.validateApiKey(invalidKey);
-    
-    return validResult.isValid && !invalidResult.isValid;
+    try {
+      // Test valid API key format (39 characters total: AIza + 35 chars)
+      const validKey = 'AIzaSyDummyKeyForTesting123456789012345';
+      const validResult = securityManager.validateApiKey(validKey);
+      
+      // Test invalid API key
+      const invalidKey = 'invalid-key';
+      const invalidResult = securityManager.validateApiKey(invalidKey);
+      
+      const testPassed = validResult && validResult.isValid && invalidResult && !invalidResult.isValid;
+      
+      return {
+        passed: testPassed,
+        error: testPassed ? null : `Valid result: ${JSON.stringify(validResult)}, Invalid result: ${JSON.stringify(invalidResult)}`
+      };
+    } catch (error) {
+      return { passed: false, error: error.message };
+    }
   }
   
   testContentFiltering() {
