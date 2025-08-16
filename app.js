@@ -216,20 +216,23 @@ class VideoGeneratorApp {
   handleSettingsUpdated(settings) {
     this.currentSettings = settings;
     
-    // Update API service with new settings
-    if (settings.apiKey && this.securityManager.validateApiKey(settings.apiKey).isValid) {
-      try {
-        this.apiService.updateApiKey(settings.apiKey);
-        this.uiManager.showNotification('Settings updated successfully', 'success');
-      } catch (error) {
-        this.errorHandler.handleError(error, {
-          context: 'settings_update'
-        });
+    // Update API service only if a valid API key is provided
+    if (settings.apiKey && settings.apiKey.trim() !== '') {
+      if (this.securityManager.validateApiKey(settings.apiKey).isValid) {
+        try {
+          this.apiService.updateApiKey(settings.apiKey);
+          this.uiManager.showNotification('Settings updated successfully', 'success');
+        } catch (error) {
+          this.errorHandler.handleError(error, {
+            context: 'settings_update'
+          });
+        }
+      } else {
+        // This case handles invalid key format
+        this.uiManager.showNotification('Invalid API key format', 'error');
       }
-    } else if (settings.apiKey) {
-      // Invalid API key
-      this.uiManager.showNotification('Invalid API key format', 'error');
     }
+    // If apiKey is empty, we do nothing, allowing the user to save settings without a key.
   }
   
   /**

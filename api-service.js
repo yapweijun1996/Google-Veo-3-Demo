@@ -31,9 +31,12 @@ class APIService {
   initialize(apiKey) {
     try {
       if (!apiKey || typeof apiKey !== 'string' || apiKey.trim().length === 0) {
-        throw new Error('API key is required and must be a non-empty string');
+        // This error is for internal validation and shouldn't be the primary user-facing error.
+        // The UI should prevent this from being called with an empty key.
+        // We will throw a more specific error that can be caught and handled.
+        throw new Error('API key is required to initialize the client.');
       }
-      
+
       this.apiKey = apiKey;
       this.genAI = new GoogleGenAI(apiKey);
       console.log('Google GenAI client initialized successfully');
