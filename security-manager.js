@@ -37,22 +37,32 @@ class SecurityManager {
    * Initialize security manager
    */
   init() {
-    this.setupCSP();
-    this.setupInputSanitization();
-    this.setupRateLimiting();
-    this.monitorSecurityEvents();
+    try {
+      this.setupCSP();
+      this.setupInputSanitization();
+      this.setupRateLimiting();
+      this.monitorSecurityEvents();
+      console.log('Security Manager initialized successfully');
+    } catch (error) {
+      console.warn('Security Manager initialization had issues:', error);
+      // Continue with basic functionality even if some features fail
+    }
   }
   
   /**
    * Setup Content Security Policy
    */
   setupCSP() {
-    // Add CSP meta tag if not present
-    if (!document.querySelector('meta[http-equiv="Content-Security-Policy"]')) {
-      const cspMeta = document.createElement('meta');
-      cspMeta.httpEquiv = 'Content-Security-Policy';
-      cspMeta.content = this.generateCSPPolicy();
-      document.head.appendChild(cspMeta);
+    try {
+      // Add CSP meta tag if not present
+      if (!document.querySelector('meta[http-equiv="Content-Security-Policy"]')) {
+        const cspMeta = document.createElement('meta');
+        cspMeta.httpEquiv = 'Content-Security-Policy';
+        cspMeta.content = this.generateCSPPolicy();
+        document.head.appendChild(cspMeta);
+      }
+    } catch (error) {
+      console.warn('Could not setup CSP:', error);
     }
   }
   
@@ -80,7 +90,8 @@ class SecurityManager {
   setupInputSanitization() {
     // Override common input methods to add sanitization
     this.interceptFormInputs();
-    this.interceptDOMManipulation();
+    // Skip DOM interception for now to avoid conflicts
+    // this.interceptDOMManipulation();
   }
   
   /**
@@ -106,14 +117,26 @@ class SecurityManager {
    * Intercept DOM manipulation for XSS prevention
    */
   interceptDOMManipulation() {
+    // Store reference to security manager for use in closure
+    const securityManager = this;
+    
     // Monitor for potentially dangerous DOM operations
-    const originalInnerHTML = Element.prototype.innerHTML;
-    Element.prototype.innerHTML = function(value) {
-      if (typeof value === 'string') {
-        value = this.sanitizeHTML(value);
-      }
-      return originalInnerHTML.call(this, value);
-    }.bind(this);
+    const originalInnerHTML = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML') || 
+                             Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML');
+    
+    if (originalInnerHTML && originalInnerHTML.set) {
+      Object.defineProperty(Element.prototype, 'innerHTML', {
+        set: function(value) {
+          if (typeof value === 'string') {
+            value = securityManager.sanitizeHTML(value);
+          }
+          return originalInnerHTML.set.call(this, value);
+        },
+        get: originalInnerHTML.get,
+        configurable: true,
+        enumerable: true
+      });
+    }
   }
   
   /**

@@ -168,10 +168,17 @@ class VideoGeneratorApp {
    */
   setupWorkflow() {
     // Override UI Manager's video content creation to use VideoPlayer
-    const originalCreateVideoContent = this.uiManager.createVideoContent;
-    this.uiManager.createVideoContent = (text, options) => {
-      return this.videoPlayer.createVideoContent(text, options);
-    };
+    if (this.uiManager.createVideoContent) {
+      const originalCreateVideoContent = this.uiManager.createVideoContent;
+      this.uiManager.createVideoContent = (text, options) => {
+        return this.videoPlayer.createVideoContent(text, options);
+      };
+    } else {
+      // Add the method if it doesn't exist
+      this.uiManager.createVideoContent = (text, options) => {
+        return this.videoPlayer.createVideoContent(text, options);
+      };
+    }
     
     // Enhance chat controller with video generation
     this.chatController.generateVideo = (prompt) => {
