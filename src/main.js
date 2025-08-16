@@ -1704,40 +1704,48 @@ async function videoGenerationKt(e, n, t, o, negativePrompt, aspectRatio) {
     const a = n[t];
     console.log(`Attempting to use API key #${t + 1}`);
     try {
-      const c = new ce(a);
+      const ai = new ce(a);
       const f = "veo-3.0";
-      const y = c.getGenerativeModel({ model: f });
-
-      const config = {};
+      
+      const generationConfig = {};
       if (negativePrompt) {
-        config.negativePrompt = negativePrompt;
+        generationConfig.negativePrompt = negativePrompt;
       }
       if (aspectRatio) {
-        config.aspectRatio = aspectRatio;
+        generationConfig.aspectRatio = aspectRatio;
       }
 
-      let operation = await y.generateContent({
+      let operation = await ai.getGenerativeModel({ model: f }).generateContent({
         prompt: e,
-        config: config,
+        generationConfig: generationConfig,
       });
       
+      let progressMessageId = null;
       while (!operation.done) {
-        W(o, { role: "model", text: "Waiting for video generation to complete..." });
+        if (!progressMessageId) {
+          progressMessageId = W(o, { role: "model", text: "Waiting for video generation to complete..." });
+        }
         await new Promise((resolve) => setTimeout(resolve, 10000));
         operation = await ai.operations.getVideosOperation({
             operation: operation,
         });
       }
 
+      if (progressMessageId) {
+        const progressMessageElement = document.getElementById(progressMessageId);
+        if (progressMessageElement) {
+          progressMessageElement.remove();
+        }
+      }
+
       const videoPart = operation.response.generatedVideos[0].video;
-      ai.files.download({
+      const videoUrl = await ai.files.download({
           file: videoPart,
-          downloadPath: "dialogue_example.mp4",
       });
 
       const modelResponse = {
         role: "model",
-        text: `Generated video for: "${e}"`,
+        text: `Generated video for: "${e}" <br> <a href="${videoUrl}" target="_blank" class="text-blue-400 hover:underline">Download Video</a>`,
       };
 
       W(o, modelResponse);
