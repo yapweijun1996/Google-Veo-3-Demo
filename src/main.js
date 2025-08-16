@@ -1697,6 +1697,52 @@ async function imageGenerationKt(e, n, t, o) {
   throw new Error("All API keys failed for image generation. Please check your keys in the settings.");
 }
 
+async function videoGenerationKt(e, n, t, o) {
+  let i = 0;
+  const r = n.length;
+  for (; i < r;) {
+    const a = n[t];
+    console.log(`Attempting to use API key #${t + 1}`);
+    try {
+      const c = new ce(a);
+      const f = "veo-3.0-generate-preview";
+      const y = c.getGenerativeModel({ model: f });
+
+      let operation = await y.generateContent(e);
+      
+      while (!operation.done) {
+        W(o, { role: "model", text: "Waiting for video generation to complete..." });
+        await new Promise((resolve) => setTimeout(resolve, 10000));
+        operation = await ai.operations.getVideosOperation({
+            operation: operation,
+        });
+      }
+
+      const videoPart = operation.response.generatedVideos[0].video;
+      ai.files.download({
+          file: videoPart,
+          downloadPath: "dialogue_example.mp4",
+      });
+
+      const modelResponse = {
+        role: "model",
+        text: `Generated video for: "${e}"`,
+      };
+
+      W(o, modelResponse);
+      await se(modelResponse);
+
+      return modelResponse;
+    } catch (c) {
+      console.warn(`API key #${t + 1} failed.`, c);
+      i++;
+      t = (t + 1) % n.length;
+      await F("currentKeyIndex", t);
+    }
+  }
+  throw new Error("All API keys failed for video generation. Please check your keys in the settings.");
+}
+
 const z="your-super-secret-key";
 let E,
 ee,
@@ -1726,6 +1772,7 @@ nn,
 on,
 sn,
 generateImageButton,
+generateVideoButton,
 imageLightbox,
 lightboxImage,
 closeLightboxButton,
@@ -1733,6 +1780,34 @@ downloadImageButton,
 X=[],
 Ye=0,
 I=null;
+
+async function generateVideo() {
+    if (X.length === 0) return;
+    const n = Xt(u.value);
+    if (!n.trim()) return;
+
+    A(!0, _, u, b, E);
+    N.classList.add("hidden");
+
+    const t = {
+        role: "user",
+        text: `Generate a video of: ${n.trim()}`,
+    };
+
+    W(E, t);
+    await se(t);
+    u.value = "";
+    u.style.height = "auto";
+    u.placeholder = "Type your message or add an image...";
+
+    try {
+        const modelResponse = await videoGenerationKt(t.text, X, Ye, E);
+        A(!1, _, u, b, E);
+    } catch (o) {
+        J(N, o.message);
+        A(!1, _, u, b, E);
+    }
+}
 
 async function generateImage() {
   if (X.length === 0) return;
@@ -1874,6 +1949,7 @@ async function tn() {
     on=document.getElementById("export-memory-button"),
     sn=document.getElementById("optimize-memory-button"),
     generateImageButton = document.getElementById("generate-image-button"),
+    generateVideoButton = document.getElementById("generate-video-button"),
     imageLightbox = document.getElementById("image-lightbox"),
     lightboxImage = document.getElementById("lightbox-image"),
     closeLightboxButton = document.getElementById("close-lightbox-button"),
@@ -1882,6 +1958,7 @@ async function tn() {
     ee.addEventListener("submit", Zt),
     Le.addEventListener("click", ()=>D.click()),
     generateImageButton.addEventListener("click", generateImage),
+    generateVideoButton.addEventListener("click", generateVideo),
     closeLightboxButton.addEventListener("click", () => {
       imageLightbox.classList.add("hidden");
     });
