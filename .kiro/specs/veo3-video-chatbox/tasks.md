@@ -34,7 +34,7 @@
   - Add user messages to chat interface when submitted
   - _Requirements: 1.1, 1.2, 1.3, 4.1, 4.3_
 
-- [-] 6. Create API service module for Google GenAI integration
+- [x] 6. Create API service module for Google GenAI integration
   - Create APIService class that initializes GoogleGenAI with API key
   - Implement generateVideo method that calls the Veo 3 API with user prompt
   - Add proper error handling for authentication and API call failures
