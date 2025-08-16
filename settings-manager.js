@@ -31,7 +31,7 @@ class SettingsManager {
   init() {
     this.bindElements();
     this.setupEventListeners();
-    // Note: loadSettings is now async and should be called externally
+    this.loadSettings();
   }
   
   /**
@@ -290,26 +290,23 @@ class SettingsManager {
   /**
    * Load settings from localStorage
    */
-  async loadSettings() {
-    return new Promise((resolve) => {
-      try {
-        const saved = localStorage.getItem('veo3-settings');
-        if (saved) {
-          const parsedSettings = JSON.parse(saved);
-          this.currentSettings = {
-            ...this.defaultSettings,
-            ...parsedSettings
-          };
-        }
-      } catch (error) {
-        console.error('Failed to load settings:', error);
-        this.currentSettings = { ...this.defaultSettings };
+  loadSettings() {
+    try {
+      const saved = localStorage.getItem('veo3-settings');
+      if (saved) {
+        const parsedSettings = JSON.parse(saved);
+        this.currentSettings = {
+          ...this.defaultSettings,
+          ...parsedSettings
+        };
       }
-      
-      // Dispatch settings loaded event
-      this.dispatchSettingsLoaded();
-      resolve();
-    });
+    } catch (error) {
+      console.error('Failed to load settings:', error);
+      this.currentSettings = { ...this.defaultSettings };
+    }
+    
+    // Dispatch settings loaded event
+    this.dispatchSettingsLoaded();
   }
   
   /**

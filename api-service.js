@@ -18,9 +18,10 @@ class APIService {
     this.maxRequestsPerWindow = 10;
     this.requestTimes = [];
     
-    if (apiKey) {
-      this.initialize(apiKey);
-    }
+    // Defer initialization to allow setting the API key later.
+    // if (apiKey) {
+    //   this.initialize(apiKey);
+    // }
   }
   
   /**

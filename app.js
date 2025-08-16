@@ -84,9 +84,8 @@ class VideoGeneratorApp {
     // Initialize Error Handler early for error tracking
     this.errorHandler = new ErrorHandler(this.uiManager);
     
-    // Initialize Settings Manager and wait for settings to load
+    // Initialize Settings Manager
     this.settingsManager = new SettingsManager();
-    await this.settingsManager.loadSettings();
     
     // Initialize Loading Manager
     this.loadingManager = new LoadingManager(this.uiManager);
@@ -100,8 +99,8 @@ class VideoGeneratorApp {
     // Initialize Video Player
     this.videoPlayer = new VideoPlayer();
     
-    // Initialize API Service with API key from settings
-    this.apiService = new APIService(this.settingsManager.getApiKey());
+    // Initialize API Service (will be configured when settings are loaded)
+    this.apiService = new APIService();
     
     // Initialize Video Generator
     this.videoGenerator = new VideoGenerator(this.apiService, this.uiManager);
@@ -215,23 +214,21 @@ class VideoGeneratorApp {
    * @param {Object} settings - Updated settings
    */
   handleSettingsUpdated(settings) {
-    const oldApiKey = this.currentSettings?.apiKey;
     this.currentSettings = settings;
-
-    // Update API service only if the key has changed
-    if (settings.apiKey && settings.apiKey !== oldApiKey) {
-      if (this.securityManager.validateApiKey(settings.apiKey).isValid) {
-        try {
-          this.apiService.updateApiKey(settings.apiKey);
-          this.uiManager.showNotification('Settings updated successfully', 'success');
-        } catch (error) {
-          this.errorHandler.handleError(error, {
-            context: 'settings_update'
-          });
-        }
-      } else {
-        this.uiManager.showNotification('Invalid API key format', 'error');
+    
+    // Update API service with new settings
+    if (settings.apiKey && this.securityManager.validateApiKey(settings.apiKey).isValid) {
+      try {
+        this.apiService.updateApiKey(settings.apiKey);
+        this.uiManager.showNotification('Settings updated successfully', 'success');
+      } catch (error) {
+        this.errorHandler.handleError(error, {
+          context: 'settings_update'
+        });
       }
+    } else if (settings.apiKey) {
+      // Invalid API key
+      this.uiManager.showNotification('Invalid API key format', 'error');
     }
   }
   
@@ -242,8 +239,16 @@ class VideoGeneratorApp {
   handleSettingsLoaded(settings) {
     this.currentSettings = settings;
     
-    // API service is now initialized in initializeModules after settings are loaded
-    // This handler can be used for any additional logic needed after settings load
+    // Initialize API service if we have an API key
+    if (settings.apiKey) {
+      try {
+        this.apiService.initialize(settings.apiKey);
+      } catch (error) {
+        this.errorHandler.handleError(error, {
+          context: 'api_initialization'
+        });
+      }
+    }
   }
   
   /**
