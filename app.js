@@ -11,6 +11,8 @@ import DownloadManager from './download-manager.js';
 import ErrorHandler from './error-handler.js';
 import ConversationManager from './conversation-manager.js';
 import LoadingManager from './loading-manager.js';
+import SecurityManager from './security-manager.js';
+import AccessibilityManager from './accessibility-manager.js';
 
 class VideoGeneratorApp {
   constructor() {
@@ -25,6 +27,8 @@ class VideoGeneratorApp {
     this.errorHandler = null;
     this.conversationManager = null;
     this.loadingManager = null;
+    this.securityManager = null;
+    this.accessibilityManager = null;
     
     // Application state
     this.isInitialized = false;
@@ -103,6 +107,12 @@ class VideoGeneratorApp {
     
     // Initialize Download Manager
     this.downloadManager = new DownloadManager(this.apiService, this.uiManager);
+    
+    // Initialize Security Manager
+    this.securityManager = new SecurityManager();
+    
+    // Initialize Accessibility Manager
+    this.accessibilityManager = new AccessibilityManager();
     
     console.log('All modules initialized');
   }
@@ -239,6 +249,28 @@ class VideoGeneratorApp {
     const { message } = messageData;
     
     try {
+      // Security validation
+      const validation = this.securityManager.validatePrompt(message);
+      if (!validation.isValid) {
+        this.uiManager.addMessage(
+          `Invalid prompt: ${validation.errors.join(', ')}`,
+          'ai',
+          'error'
+        );
+        return;
+      }
+      
+      // Rate limiting check
+      const rateLimitCheck = this.securityManager.checkRateLimit('messages');
+      if (!rateLimitCheck.allowed) {
+        this.uiManager.addMessage(
+          rateLimitCheck.message,
+          'ai',
+          'error'
+        );
+        return;
+      }
+      
       // Check if API is configured
       if (!this.settingsManager.hasApiKey()) {
         this.uiManager.addMessage(
@@ -249,8 +281,8 @@ class VideoGeneratorApp {
         return;
       }
       
-      // Generate video from user message
-      await this.generateVideo(message);
+      // Generate video from user message (use sanitized prompt)
+      await this.generateVideo(validation.sanitizedPrompt);
       
     } catch (error) {
       this.errorHandler.handleError(error, {
