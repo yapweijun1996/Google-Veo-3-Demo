@@ -214,12 +214,17 @@ class VideoGeneratorApp {
    * @param {Object} settings - Updated settings
    */
   handleSettingsUpdated(settings) {
+    console.log('[DEBUG] handleSettingsUpdated called with:', settings);
     const oldApiKey = this.currentSettings?.apiKey;
     this.currentSettings = settings;
+    console.log('[DEBUG] App currentSettings updated to:', this.currentSettings);
 
     // Only update the API service if the key has changed to a new, valid key
     if (settings.apiKey && settings.apiKey !== oldApiKey) {
+      console.log('[DEBUG] API key has changed. Old:', oldApiKey, 'New:', settings.apiKey);
       this._initializeApiService(settings.apiKey);
+    } else {
+      console.log('[DEBUG] API key has not changed or is empty. Skipping initialization.');
     }
   }
   
@@ -228,11 +233,15 @@ class VideoGeneratorApp {
    * @param {Object} settings - Loaded settings
    */
   handleSettingsLoaded(settings) {
+    console.log('[DEBUG] handleSettingsLoaded called with:', settings);
     this.currentSettings = settings;
     
     // Initialize API service if a key is available on load
     if (settings.apiKey) {
+      console.log('[DEBUG] API key found on load. Initializing API service.');
       this._initializeApiService(settings.apiKey);
+    } else {
+      console.log('[DEBUG] No API key found on load.');
     }
   }
 
@@ -242,17 +251,24 @@ class VideoGeneratorApp {
    * @private
    */
   _initializeApiService(apiKey) {
-    if (this.securityManager.validateApiKey(apiKey).isValid) {
+    console.log('[DEBUG] _initializeApiService called with key:', apiKey);
+    const validation = this.securityManager.validateApiKey(apiKey);
+    console.log('[DEBUG] API key validation result:', validation);
+
+    if (validation.isValid) {
       try {
+        console.log('[DEBUG] API key is valid. Calling apiService.initialize...');
         this.apiService.initialize(apiKey);
         this.uiManager.showNotification('API key is valid and service is ready.', 'success');
       } catch (error) {
+        console.error('[DEBUG] Error during apiService.initialize:', error);
         this.errorHandler.handleError(error, {
           context: 'api_initialization'
         });
       }
     } else {
-      this.uiManager.showNotification('Invalid API key format.', 'error');
+      console.log('[DEBUG] API key is invalid. Showing notification.');
+      this.uiManager.showNotification(`Invalid API key: ${validation.errors.join(', ')}`, 'error');
     }
   }
   

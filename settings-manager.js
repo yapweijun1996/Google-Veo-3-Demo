@@ -266,6 +266,7 @@ class SettingsManager {
     
     // Save to localStorage
     try {
+      console.log('[DEBUG] Saving settings to localStorage:', this.currentSettings);
       localStorage.setItem('veo3-settings', JSON.stringify(this.currentSettings));
       
       // Show success feedback
@@ -293,12 +294,16 @@ class SettingsManager {
   loadSettings() {
     try {
       const saved = localStorage.getItem('veo3-settings');
+      console.log('[DEBUG] Loaded settings from localStorage:', saved);
       if (saved) {
         const parsedSettings = JSON.parse(saved);
         this.currentSettings = {
           ...this.defaultSettings,
           ...parsedSettings
         };
+        console.log('[DEBUG] Parsed and loaded settings:', this.currentSettings);
+      } else {
+        console.log('[DEBUG] No settings found in localStorage.');
       }
     } catch (error) {
       console.error('Failed to load settings:', error);
