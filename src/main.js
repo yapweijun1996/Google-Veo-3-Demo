@@ -1813,7 +1813,7 @@ async function generateVideo() {
 
     const t = {
         role: "user",
-        text: `Generate a video of: ${n.trim()}`,
+        text: n.trim(),
     };
 
     W(E, t);
