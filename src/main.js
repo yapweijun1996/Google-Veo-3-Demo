@@ -1706,17 +1706,18 @@ async function videoGenerationKt(e, n, t, o, negativePrompt, aspectRatio, videoM
     try {
       const ai = new ce(a);
       
-      const generationConfig = {};
+      const config = {};
       if (negativePrompt) {
-        generationConfig.negativePrompt = negativePrompt;
+        config.negativePrompt = negativePrompt;
       }
       if (aspectRatio) {
-        generationConfig.aspectRatio = aspectRatio;
+        config.aspectRatio = aspectRatio;
       }
 
-      let operation = await ai.getGenerativeModel({ model: videoModel }).generateContent({
+      let operation = await ai.models.generateVideos({
+        model: videoModel,
         prompt: e,
-        generationConfig: generationConfig,
+        config: config,
       });
       
       let progressMessageId = null;
