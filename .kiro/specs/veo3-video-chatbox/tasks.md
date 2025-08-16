@@ -41,14 +41,14 @@
   - Create method to validate API key before making requests
   - _Requirements: 1.3, 5.1, 5.2, 5.3, 5.4_
 
-- [ ] 7. Implement video generation polling mechanism
+- [x] 7. Implement video generation polling mechanism
   - Create pollOperation method to check video generation status
   - Add polling loop with 10-second intervals until video is ready
   - Implement progress updates in the UI during polling
   - Handle polling timeout and retry logic for failed operations
   - _Requirements: 2.1, 2.2, 2.3_
 
-- [ ] 8. Add video display and playback functionality
+- [-] 8. Add video display and playback functionality
   - Create video element in HTML for displaying generated videos
   - Implement method to display completed video in chat interface
   - Add video controls for play, pause, and volume
