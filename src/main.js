@@ -1704,6 +1704,7 @@ async function videoGenerationKt(e, n, t, o, negativePrompt, aspectRatio, videoM
     const a = n[t];
     console.log(`Attempting to use API key #${t + 1}`);
     try {
+      console.log("Entered videoGenerationKt try block.");
       const ai = new ce(a);
       
       const config = {};
@@ -1714,14 +1715,17 @@ async function videoGenerationKt(e, n, t, o, negativePrompt, aspectRatio, videoM
         config.aspectRatio = aspectRatio;
       }
 
+      console.log("Calling ai.models.generateVideos with:", { videoModel, e, config });
       let operation = await ai.models.generateVideos({
         model: videoModel,
         prompt: e,
         config: config,
       });
+      console.log("Initial operation response:", operation);
       
       let progressMessageId = null;
       while (!operation.done) {
+        console.log("Polling for video status... Operation not done yet.");
         if (!progressMessageId) {
           progressMessageId = W(o, { role: "model", text: "Waiting for video generation to complete..." });
         }
@@ -1729,6 +1733,7 @@ async function videoGenerationKt(e, n, t, o, negativePrompt, aspectRatio, videoM
         operation = await ai.operations.getVideosOperation({
             operation: operation,
         });
+        console.log("Polled operation status:", operation);
       }
 
       if (progressMessageId) {
@@ -1738,11 +1743,14 @@ async function videoGenerationKt(e, n, t, o, negativePrompt, aspectRatio, videoM
         }
       }
 
+      console.log("Video generation operation is done. Proceeding to download.");
       const videoPart = operation.response.generatedVideos[0].video;
+      console.log("Video part:", videoPart);
       const videoUrl = await ai.files.download({
           file: videoPart,
           downloadPath: `video-${Date.now()}.mp4`,
       });
+      console.log("Video downloaded successfully. URL:", videoUrl);
 
       const modelResponse = {
         role: "model",
@@ -1754,7 +1762,7 @@ async function videoGenerationKt(e, n, t, o, negativePrompt, aspectRatio, videoM
 
       return modelResponse;
     } catch (c) {
-      console.warn(`API key #${t + 1} failed.`, c);
+      console.error(`videoGenerationKt Error: API key #${t + 1} failed.`, c);
       i++;
       t = (t + 1) % n.length;
       await F("currentKeyIndex", t);
@@ -1805,10 +1813,17 @@ Ye=0,
 I=null;
 
 async function generateVideo() {
-    if (X.length === 0) return;
+    console.log("generateVideo function called.");
+    if (X.length === 0) {
+        console.log("No API keys found. Aborting video generation.");
+        return;
+    }
     const n = u.value;
-    if (!n.trim()) return;
-
+    if (!n.trim()) {
+        console.log("Prompt is empty. Aborting video generation.");
+        return;
+    }
+    console.log("Starting video generation process...");
     A(!0, _, u, b, E);
     N.classList.add("hidden");
 
@@ -1824,12 +1839,17 @@ async function generateVideo() {
     u.placeholder = "Type your message or add an image...";
 
     try {
+        console.log("Reading video settings from IndexedDB...");
         const negativePrompt = await T("negativePrompt", "");
         const aspectRatio = await T("aspectRatio", "16:9");
         const videoModel = await T("videoModel", "veo-3.0");
+        console.log("Settings loaded:", { negativePrompt, aspectRatio, videoModel });
+        console.log("Calling videoGenerationKt...");
         const modelResponse = await videoGenerationKt(t.text, X, Ye, E, negativePrompt, aspectRatio, videoModel);
+        console.log("videoGenerationKt finished successfully.");
         A(!1, _, u, b, E);
     } catch (o) {
+        console.error("Error in generateVideo function:", o);
         J(N, o.message);
         A(!1, _, u, b, E);
     }
