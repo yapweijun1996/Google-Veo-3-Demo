@@ -1741,6 +1741,7 @@ async function videoGenerationKt(e, n, t, o, negativePrompt, aspectRatio, videoM
       const videoPart = operation.response.generatedVideos[0].video;
       const videoUrl = await ai.files.download({
           file: videoPart,
+          downloadPath: `video-${Date.now()}.mp4`,
       });
 
       const modelResponse = {
