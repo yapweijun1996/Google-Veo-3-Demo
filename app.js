@@ -99,7 +99,7 @@ class VideoGeneratorApp {
     // Initialize Video Player
     this.videoPlayer = new VideoPlayer();
     
-    // Initialize API Service (will be configured when settings are loaded)
+    // Initialize API Service without an API key
     this.apiService = new APIService();
     
     // Initialize Video Generator
@@ -214,25 +214,13 @@ class VideoGeneratorApp {
    * @param {Object} settings - Updated settings
    */
   handleSettingsUpdated(settings) {
+    const oldApiKey = this.currentSettings?.apiKey;
     this.currentSettings = settings;
-    
-    // Update API service only if a valid API key is provided
-    if (settings.apiKey && settings.apiKey.trim() !== '') {
-      if (this.securityManager.validateApiKey(settings.apiKey).isValid) {
-        try {
-          this.apiService.updateApiKey(settings.apiKey);
-          this.uiManager.showNotification('Settings updated successfully', 'success');
-        } catch (error) {
-          this.errorHandler.handleError(error, {
-            context: 'settings_update'
-          });
-        }
-      } else {
-        // This case handles invalid key format
-        this.uiManager.showNotification('Invalid API key format', 'error');
-      }
+
+    // Only update the API service if the key has changed to a new, valid key
+    if (settings.apiKey && settings.apiKey !== oldApiKey) {
+      this._initializeApiService(settings.apiKey);
     }
-    // If apiKey is empty, we do nothing, allowing the user to save settings without a key.
   }
   
   /**
@@ -242,15 +230,29 @@ class VideoGeneratorApp {
   handleSettingsLoaded(settings) {
     this.currentSettings = settings;
     
-    // Initialize API service if we have an API key
+    // Initialize API service if a key is available on load
     if (settings.apiKey) {
+      this._initializeApiService(settings.apiKey);
+    }
+  }
+
+  /**
+   * Centralized method to initialize the API service with a key.
+   * @param {string} apiKey
+   * @private
+   */
+  _initializeApiService(apiKey) {
+    if (this.securityManager.validateApiKey(apiKey).isValid) {
       try {
-        this.apiService.initialize(settings.apiKey);
+        this.apiService.initialize(apiKey);
+        this.uiManager.showNotification('API key is valid and service is ready.', 'success');
       } catch (error) {
         this.errorHandler.handleError(error, {
           context: 'api_initialization'
         });
       }
+    } else {
+      this.uiManager.showNotification('Invalid API key format.', 'error');
     }
   }
   

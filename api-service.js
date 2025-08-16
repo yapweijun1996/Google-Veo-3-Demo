@@ -4,8 +4,8 @@
 import { GoogleGenAI } from '@google/genai';
 
 class APIService {
-  constructor(apiKey = null) {
-    this.apiKey = apiKey;
+  constructor() {
+    this.apiKey = null;
     this.genAI = null;
     this.defaultModel = 'veo-3.0-generate-preview';
     
@@ -17,11 +17,6 @@ class APIService {
     this.requestWindow = 60000; // 1 minute
     this.maxRequestsPerWindow = 10;
     this.requestTimes = [];
-    
-    // Defer initialization to allow setting the API key later.
-    // if (apiKey) {
-    //   this.initialize(apiKey);
-    // }
   }
   
   /**
@@ -31,12 +26,9 @@ class APIService {
   initialize(apiKey) {
     try {
       if (!apiKey || typeof apiKey !== 'string' || apiKey.trim().length === 0) {
-        // This error is for internal validation and shouldn't be the primary user-facing error.
-        // The UI should prevent this from being called with an empty key.
-        // We will throw a more specific error that can be caught and handled.
-        throw new Error('API key is required to initialize the client.');
+        throw new Error('API key is required and must be a non-empty string');
       }
-
+      
       this.apiKey = apiKey;
       this.genAI = new GoogleGenAI(apiKey);
       console.log('Google GenAI client initialized successfully');
@@ -456,11 +448,9 @@ class APIService {
    * @param {string} newApiKey - New API key
    */
   updateApiKey(newApiKey) {
-    if (!this.validateApiKey(newApiKey)) {
-      throw new Error('Invalid API key format');
-    }
-    
-    this.initialize(newApiKey);
+    // This method will now just call the central initialize method.
+    // Validation should be handled before calling this.
+    return this.initialize(newApiKey);
   }
 }
 
