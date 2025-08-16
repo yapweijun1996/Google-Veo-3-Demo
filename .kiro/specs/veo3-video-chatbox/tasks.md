@@ -48,14 +48,14 @@
   - Handle polling timeout and retry logic for failed operations
   - _Requirements: 2.1, 2.2, 2.3_
 
-- [-] 8. Add video display and playback functionality
+- [x] 8. Add video display and playback functionality
   - Create video element in HTML for displaying generated videos
   - Implement method to display completed video in chat interface
   - Add video controls for play, pause, and volume
   - Style video player to match chat interface design
   - _Requirements: 3.1, 3.2_
 
-- [ ] 9. Implement video download functionality
+- [-] 9. Implement video download functionality
   - Create downloadVideo method using Google GenAI file download API
   - Add download button to video messages in chat
   - Implement blob creation and URL generation for file downloads
