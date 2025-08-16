@@ -2007,7 +2007,10 @@ async function tn() {
     ee.addEventListener("submit", Zt),
     Le.addEventListener("click", ()=>D.click()),
     generateImageButton.addEventListener("click", generateImage),
-    generateVideoButton.addEventListener("click", generateVideo),
+    generateVideoButton.addEventListener("click", () => {
+        console.log("Generate Video button clicked.");
+        generateVideo();
+    }),
     closeLightboxButton.addEventListener("click", () => {
       imageLightbox.classList.add("hidden");
     });
