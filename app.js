@@ -84,8 +84,9 @@ class VideoGeneratorApp {
     // Initialize Error Handler early for error tracking
     this.errorHandler = new ErrorHandler(this.uiManager);
     
-    // Initialize Settings Manager
+    // Initialize Settings Manager and wait for settings to load
     this.settingsManager = new SettingsManager();
+    await this.settingsManager.loadSettings();
     
     // Initialize Loading Manager
     this.loadingManager = new LoadingManager(this.uiManager);
@@ -241,16 +242,8 @@ class VideoGeneratorApp {
   handleSettingsLoaded(settings) {
     this.currentSettings = settings;
     
-    // Initialize API service if we have an API key
-    if (settings.apiKey) {
-      try {
-        this.apiService.initialize(settings.apiKey);
-      } catch (error) {
-        this.errorHandler.handleError(error, {
-          context: 'api_initialization'
-        });
-      }
-    }
+    // API service is now initialized in initializeModules after settings are loaded
+    // This handler can be used for any additional logic needed after settings load
   }
   
   /**
