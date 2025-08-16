@@ -243,10 +243,10 @@ class SecurityManager {
       validation.errors.push('API key is too long');
     }
     
-    // Format validation for Google AI API keys
-    if (!/^AIza[0-9A-Za-z-_]{35}$/.test(apiKey)) {
+    // Corrected format validation for Google AI API keys
+    if (!apiKey.startsWith('AIza') || apiKey.length !== 39) {
       validation.isValid = false;
-      validation.errors.push('Invalid API key format');
+      validation.errors.push('Invalid API key format. It should start with "AIza" and be 39 characters long.');
     }
     
     // Check for suspicious patterns
