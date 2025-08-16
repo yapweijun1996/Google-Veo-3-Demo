@@ -1804,7 +1804,7 @@ I=null;
 
 async function generateVideo() {
     if (X.length === 0) return;
-    const n = Xt(u.value);
+    const n = u.value;
     if (!n.trim()) return;
 
     A(!0, _, u, b, E);
