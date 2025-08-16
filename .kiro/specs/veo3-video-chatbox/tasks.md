@@ -6,35 +6,35 @@
   - Add viewport meta tag and basic accessibility attributes
   - _Requirements: 1.1, 6.1, 6.3_
 
-- [-] 2. Implement core CSS styling and responsive design
+- [x] 2. Implement core CSS styling and responsive design
   - Create CSS file with modern chat interface styling using CSS Grid and Flexbox
   - Implement CSS custom properties for theming and consistent colors
   - Add responsive design with mobile-first approach and media queries
   - Style message bubbles, input fields, buttons, and loading states
   - _Requirements: 6.1, 6.2, 6.3_
 
-- [ ] 3. Create settings modal and API key management
+- [x] 3. Create settings modal and API key management
   - Implement settings modal HTML structure and CSS styling
   - Create JavaScript functions for showing/hiding settings modal
   - Add API key input field with password masking
   - Implement localStorage functions for saving and loading API key
   - _Requirements: 5.1, 5.2, 5.3_
 
-- [ ] 4. Build core UI manager module
+- [x] 4. Build core UI manager module
   - Create UIManager class with methods for DOM manipulation
   - Implement addMessage function to display user and AI messages in chat
   - Add showLoading and hideLoading methods with progress indicators
   - Create scrolling functionality to keep latest messages visible
   - _Requirements: 1.1, 1.4, 4.1, 4.4_
 
-- [ ] 5. Implement message input and basic chat functionality
+- [x] 5. Implement message input and basic chat functionality
   - Create event listeners for input field and send button
   - Add Enter key support for sending messages
   - Implement input validation and character limit checking
   - Add user messages to chat interface when submitted
   - _Requirements: 1.1, 1.2, 1.3, 4.1, 4.3_
 
-- [ ] 6. Create API service module for Google GenAI integration
+- [-] 6. Create API service module for Google GenAI integration
   - Create APIService class that initializes GoogleGenAI with API key
   - Implement generateVideo method that calls the Veo 3 API with user prompt
   - Add proper error handling for authentication and API call failures
