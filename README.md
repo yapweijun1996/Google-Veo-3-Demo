@@ -1,179 +1,80 @@
-# Veo 3 Video Generator 🎬
+# Gemini AI Chatbox
 
-A professional web application for generating videos using Google's Veo 3 AI model. Built with vanilla HTML, CSS, and JavaScript - no frameworks required!
+Welcome to the Gemini AI Chatbox! This is a simple, single-page, serverless web application that allows you to chat with Google's Gemini AI. It's built with vanilla HTML, CSS, and JavaScript, and uses Vite for a modern development experience while maintaining a single-file output for production.
 
-## ✨ Features
+## Features
 
-- 🎥 **AI Video Generation** - Create videos from text descriptions using Google Veo 3
-- 💬 **Chat Interface** - Intuitive conversation-style interaction
-- 📱 **Responsive Design** - Works perfectly on desktop, tablet, and mobile
-- 🔒 **Security First** - Input validation, XSS protection, and rate limiting
-- ♿ **Accessibility** - Full WCAG compliance with screen reader support
-- 💾 **Conversation History** - Persistent chat storage with search and export
-- 🎨 **Modern UI** - Clean, professional interface with dark mode support
-- 📊 **Progress Tracking** - Real-time video generation progress
-- ⬇️ **Easy Downloads** - One-click video downloads with progress tracking
+*   **All-in-One `index.html`:** The entire application is self-contained in a single file for maximum portability after the build process.
+*   **Direct Google Gemini API Integration:** Chat directly with the Gemini AI from the client-side.
+*   **Persistent Chat History:** Your conversations are saved in your browser's IndexedDB, so you can pick up where you left off.
+*   **Easy API Key Setup:** A settings modal makes it simple to add and manage your Gemini API keys.
+*   **API Key Fallback:** If you provide multiple API keys, the app will automatically try the next one if a request fails.
+*   **Markdown Support:** The chat displays responses in Markdown, with code blocks and syntax highlighting.
+*   **Responsive Design:** The chatbox looks great on both desktop and mobile devices thanks to Tailwind CSS.
 
-## 🚀 Quick Start
+## How to Use
 
-### 1. Get Your API Key
-1. Visit [Google AI Studio](https://aistudio.google.com/)
-2. Create a new API key for the Gemini API
-3. Copy your API key
+The production-ready version of the application is a single `index.html` file located in the `dist` directory. You can run it directly in your web browser.
 
-### 2. Configure the Application
-1. Open the application
-2. Click the settings button (⚙️) in the top right
-3. Paste your API key and save
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/yapweijun1996/Gemini-GenAI-Chatbox.git
+    ```
+2.  **Navigate to the project directory:**
+    ```bash
+    cd Gemini-GenAI-Chatbox
+    ```
+3.  **Open `dist/index.html` in your browser:**
+    You can do this by double-clicking the file or by right-clicking and selecting "Open with" your preferred browser.
 
-### 3. Generate Videos
-1. Type a video description in the chat input
-2. Press Enter or click Send
-3. Wait for your video to generate
-4. Download and enjoy!
+## Development
 
-## 🛠️ Technical Details
+This project uses Vite for a modern development workflow.
 
-### Architecture
-- **Frontend**: Vanilla HTML5, CSS3, JavaScript (ES6+)
-- **API**: Google GenAI SDK for Veo 3 integration
-- **Storage**: LocalStorage for settings and conversation history
-- **Security**: Comprehensive input validation and XSS protection
-- **Testing**: Automated integration test suite
+1.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+2.  **Start the development server:**
+    ```bash
+    npm run dev
+    ```
+    This will start a local server, and you can access the application at the URL provided in the terminal. The server supports hot-reloading, so any changes you make to the source files will be reflected in the browser immediately.
 
-### Browser Support
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
+## Build
 
-### File Structure
-```
-├── index.html              # Main application structure
-├── styles.css              # Complete styling and responsive design
-├── app.js                  # Main application controller
-├── settings-manager.js     # Settings and API key management
-├── ui-manager.js           # DOM manipulation and UI interactions
-├── chat-controller.js      # Message input and chat functionality
-├── api-service.js          # Google GenAI API integration
-├── video-generator.js      # Video generation with polling
-├── video-player.js         # Enhanced video playback
-├── download-manager.js     # File download management
-├── error-handler.js        # Comprehensive error handling
-├── conversation-manager.js # Chat history persistence
-├── loading-manager.js      # Loading states and progress
-├── security-manager.js     # Security and validation
-├── accessibility-manager.js# Accessibility features
-└── integration-tests.js    # Comprehensive test suite
+To create the final, single-file `index.html` for production, run the following command:
+
+```bash
+npm run build
 ```
 
-## 🔧 Development
+This will generate a `dist` directory containing the optimized, single-file application.
 
-### Running Tests
-Open the browser console to see integration test results:
-```javascript
-// View test results
-console.log(window.testReport);
+## Getting a Gemini API Key
 
-// Run tests manually
-const tester = new IntegrationTester(window.videoGeneratorApp);
-tester.runAllTests();
-```
+To use this chatbox, you'll need a Google Gemini API key.
 
-### Security Features
-- Input validation and sanitization
-- Rate limiting (10 messages/minute, 5 API calls/minute)
-- XSS protection
-- Content filtering
-- API key validation
+1.  Visit the [Google AI Studio](https://aistudio.google.com/).
+2.  Sign in with your Google account.
+3.  Click on **"Get API key"** to create a new API key.
+4.  Copy the key.
+5.  In the chatbox, click the settings icon and paste your API key into the input field. You can add multiple keys, and the application will automatically rotate them if one fails.
 
-### Accessibility Features
-- ARIA labels and roles
-- Keyboard navigation (Tab, Arrow keys, Escape)
-- Screen reader support
-- High contrast mode
-- Reduced motion support
-- Focus management
+## Code Overview
 
-## 📝 Usage Examples
+The application source code is located in the `src` directory and is organized into the following files:
 
-### Basic Video Generation
-```
-"A cat playing piano in a cozy living room"
-```
+*   `index.html`: The main HTML structure of the application.
+*   `main.js`: The main entry point for the application's JavaScript logic.
+*   `styles.css`: Custom styles for the application.
 
-### Advanced Descriptions
-```
-"A time-lapse of a flower blooming in spring, with soft morning light filtering through the petals, shot in 4K with shallow depth of field"
-```
+The Vite build process bundles all the code from these files into a single `index.html` file in the `dist` directory.
 
-### Creative Scenarios
-```
-"An astronaut floating in space, looking at Earth through their helmet visor, with stars twinkling in the background"
-```
+## Demo
 
-## 🎯 Best Practices
+https://yapweijun1996.github.io/Gemini-GenAI-Chatbox/
 
-### Writing Good Prompts
-- Be specific and descriptive
-- Include lighting, mood, and style preferences
-- Mention camera angles or movements if desired
-- Keep prompts under 500 characters
+## Preview
 
-### Performance Tips
-- Wait for one video to complete before starting another
-- Use specific prompts for better results
-- Check your API quota regularly
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**"Invalid API key" error**
-- Verify your API key is correct
-- Ensure you have Gemini API access enabled
-- Check your API quota hasn't been exceeded
-
-**Video generation fails**
-- Try a simpler, more specific prompt
-- Check your internet connection
-- Verify the Veo 3 service is available
-
-**Slow generation**
-- Video generation can take 2-10 minutes
-- Complex prompts may take longer
-- Check the progress indicator for updates
-
-## 📊 Test Results
-
-Current test coverage: **96.3%** (26/27 tests passing)
-
-Test categories:
-- ✅ Initialization (4/4)
-- ✅ UI Components (5/5)
-- ✅ Security (4/5)
-- ✅ Accessibility (5/5)
-- ✅ Workflow (4/4)
-- ✅ Error Handling (4/4)
-
-## 🤝 Contributing
-
-This is a complete, production-ready application. Feel free to:
-- Report bugs or issues
-- Suggest new features
-- Improve documentation
-- Add more test cases
-
-## 📄 License
-
-MIT License - feel free to use this code for your own projects!
-
-## 🙏 Acknowledgments
-
-- Google AI for the Veo 3 model
-- Modern web standards for making this possible
-- The accessibility community for guidance on inclusive design
-
----
-
-**Happy video generating!** 🎬✨
+<img width="1440" height="798" alt="Screenshot 2025-07-19 at 10 39 30 PM" src="https://github.com/user-attachments/assets/5b6a12e7-0bdf-4ff0-8877-7a0531ca2e75" />
